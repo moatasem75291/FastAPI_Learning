@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from fastapi import FastAPI  # type:ignore
+from fastapi import FastAPI, Query
 
 
 app = FastAPI()
@@ -26,6 +26,19 @@ async def create_item(item: Item):
 @app.put("/items/{item_id}")
 async def create_item_with_put(item_id: int, item: Item, q: str | None = None):
     result = {"item_id": item_id, **item.dict()}
+    if q:
+        result.update({"q": q})
+    return result
+
+
+@app.get("/items")
+async def read_items(q: str = Query(..., min_length=3, max_length=12)):
+    result = {
+        "items": [
+            {"item_id": 1, "name": "item1"},
+            {"item_id": 2, "name": "item2"},
+        ]
+    }
     if q:
         result.update({"q": q})
     return result
