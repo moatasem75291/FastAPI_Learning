@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Path
 
 
 app = FastAPI()
@@ -42,3 +42,18 @@ async def read_items(q: str = Query(..., min_length=3, max_length=12)):
     if q:
         result.update({"q": q})
     return result
+
+
+@app.get("/items_validation/{item_id}")
+async def read_items_validation(
+    item_id: int = Path(..., title="This is the item ID ://"),
+    size: float = Query(..., gt=0, le=7.25),
+    q: str | None = Query(None, title="Put your query her ://", alias="item-query"),
+):
+    results = {
+        "item_id": item_id,
+        "size": size,
+    }
+    if q:
+        results.update({"q": q})
+    return results
